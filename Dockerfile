@@ -1,43 +1,29 @@
-
-# Start from golang base image
-FROM golang:alpine as builder
-
-# ENV GO111MODULE=on
-
-# Add Maintainer info
-LABEL maintainer="Steven Victor <chikodi543@gmail.com>"
-
-# Install git.
-# Git is required for fetching the dependencies.
-RUN apk update && apk add --no-cache git
-
-# Set the current working directory inside the container 
-WORKDIR /app
-
-# Copy go mod and sum files 
-COPY go.mod go.sum ./
-
-# Download all dependencies. Dependencies will be cached if the go.mod and the go.sum files are not changed 
-RUN go mod download 
-
-# Copy the source from the current directory to the working Directory inside the container 
-COPY . .
-
-# Build the Go app
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
-
-# Start a new stage from scratch
-FROM alpine:latest
-RUN apk --no-cache add ca-certificates
-
-WORKDIR /root/
-
-# Copy the Pre-built binary file from the previous stage. Observe we also copied the .env file
-COPY --from=builder /app/main .
-COPY --from=builder /app/.env .       
-
-# Expose port 8080 to the outside world
-EXPOSE 9090
-
-#Command to run the executable
-CMD ["./main"]
+# Build Stage
+# First pull Golang image
+FROM golang:1.17-alpine as build-env
+ 
+# Set environment variable
+ENV APP_NAME sample-dockerize-app
+ENV CMD_PATH main.go
+ 
+# Copy application data into image
+COPY . $GOPATH/src/$APP_NAME
+WORKDIR $GOPATH/src/$APP_NAME
+ 
+# Budild application
+RUN CGO_ENABLED=0 go build -v -o /$APP_NAME $GOPATH/src/$APP_NAME/$CMD_PATH
+ 
+# Run Stage
+FROM alpine:3.14
+ 
+# Set environment variable
+ENV APP_NAME sample-dockerize-app
+ 
+# Copy only required data into this image
+COPY --from=build-env /$APP_NAME .
+ 
+# Expose application port
+EXPOSE 8081
+ 
+# Start app
+CMD ./$APP_NAME
