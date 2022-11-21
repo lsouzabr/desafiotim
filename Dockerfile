@@ -27,3 +27,4 @@ EXPOSE 8081
  
 # Start app
 CMD ./$APP_NAME
+
