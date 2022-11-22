@@ -23,7 +23,7 @@ type Fields struct {
 
 func carrega(w http.ResponseWriter, r *http.Request) {
     // Declare host and port options to pass to the Connect() method
-    clientOptions := options.Client().ApplyURI("mongodb://admin:admin@localhost:27017")
+    clientOptions := options.Client().ApplyURI("mongodb://admin:admin@my-mongodb:27017")
     //fmt.Println("clientOptions type:", reflect.TypeOf(clientOptions), "\n")
 
     // Connect to the MongoDB and return Client instance
