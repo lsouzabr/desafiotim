@@ -18,14 +18,10 @@ type Person struct {
     Letters []string
 }
 
-
 type Fields struct {
-    _id  int
-    count_valid int
-	count_invalid int
-	ratio float32
-
-    
+    Name  string
+    Email string
+    Dept  int
 }
 
 func valida(w http.ResponseWriter, r *http.Request) {
@@ -95,7 +91,6 @@ func updateStatus(dados string){
 
     var result Fields
 
-
     err = col.FindOne(context.TODO(), bson.D{}).Decode(&result)
     if err != nil {
         fmt.Println("FindOne() ERROR:", err)
@@ -120,29 +115,19 @@ func updateStatus(dados string){
                 os.Exit(1)
                
             } else {
-				fmt.Println("_____________>%s", )
-
 				jsonStr, err := json.Marshal(result)
 				//return jsonStr
 
 
-				db.collection.updateOne(
-					<filter>,
-					<update>,
-					{
-					  upsert: <boolean>,
-					  writeConcern: <document>,
-					  collation: <document>,
-					  arrayFilters: [ <filterdocument1>, ... ],
-					  hint:  <document|string>        // Available starting in MongoDB 4.2.1
-					}
-				 )				
-
-			
+				if err != nil {
+					fmt.Printf("Error: %s", err.Error())
+				} else {
+					fmt.Println(string(jsonStr))
+				}				
             }
         }
     }
-	fmt.Println("Dados atualizados com sucesso")
+	fmt.Println("Dados atualizados com")
 }
 
 func carrega(w http.ResponseWriter, r *http.Request) {
