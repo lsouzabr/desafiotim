@@ -12,6 +12,8 @@ import (
     "go.mongodb.org/mongo-driver/bson"
     "go.mongodb.org/mongo-driver/mongo"
     "go.mongodb.org/mongo-driver/mongo/options"	
+	"go.mongodb.org/mongo-driver/bson/primitive"
+
 )
 
 type Person struct {
@@ -76,8 +78,7 @@ func valida(w http.ResponseWriter, r *http.Request) {
 func updateStatus(dados string){
 
 
-    //clientOptions := options.Client().ApplyURI("mongodb://admin:admin@my-mongodb:27017")
-	clientOptions := options.Client().ApplyURI("mongodb://admin:admin@localhost:27017")
+    clientOptions := options.Client().ApplyURI("mongodb://admin:admin@localhost:27017")
 
     client, err := mongo.Connect(context.TODO(), clientOptions)
     if err != nil {
@@ -116,7 +117,45 @@ func updateStatus(dados string){
                
             } else {
 				jsonStr, err := json.Marshal(result)
-				//return jsonStr
+
+
+			type MyJsonName struct {
+				ID struct {
+					id string `json:"$_id"`
+				} `json:"_id"`
+				CountInvalid int64   `json:"count_invalid"`
+				CountValid   float64 `json:"count_valid"`
+				Ratio        float64 `json:"ratio"`
+			}
+
+			// web server
+
+			type Foo struct {
+				Number int    `json:"number"`
+				Title  string `json:"title"`
+			}
+
+
+			var mJsonName MyJsonName
+			json.Unmarshal(jsonStr, &mJsonName)
+			fmt.Printf("Error: %s", jsonStr)
+
+
+
+				coll := client.Database("desafiotim").Collection("desafiotim")
+				id, _ := primitive.ObjectIDFromHex("637d01b595bc98257139a3f8")
+				filter := bson.D{{"_id", id}}
+				update := bson.D{{"$set", bson.D{{"count_valid", 5.4}}}}
+				result, err := coll.UpdateOne(context.TODO(), filter, update)
+				fmt.Println("", result)
+				
+
+
+
+
+				if err != nil {
+					panic(err)
+				}
 
 
 				if err != nil {
@@ -125,15 +164,13 @@ func updateStatus(dados string){
 					fmt.Println(string(jsonStr))
 				}				
             }
+
         }
     }
-	fmt.Println("Dados atualizados com")
 }
 
 func carrega(w http.ResponseWriter, r *http.Request) {
-    //clientOptions := options.Client().ApplyURI("mongodb://admin:admin@my-mongodb:27017")
-	clientOptions := options.Client().ApplyURI("mongodb://admin:admin@localhost:27017")
-
+    clientOptions := options.Client().ApplyURI("mongodb://admin:admin@my-mongodb:27017")
     client, err := mongo.Connect(context.TODO(), clientOptions)
     if err != nil {
         fmt.Println("mongo.Connect() ERROR:", err)
