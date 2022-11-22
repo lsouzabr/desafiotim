@@ -5,6 +5,9 @@ import (
     "fmt"     // Println() function
     "os"
     "time"
+	"net/http"
+	"log"
+	//"reflect"
 	"encoding/json"
     // import 'mongo-driver' package libraries
     "go.mongodb.org/mongo-driver/bson"
@@ -18,7 +21,7 @@ type Fields struct {
     Dept  int
 }
 
-func main() {
+func carrega(w http.ResponseWriter, r *http.Request) {
     // Declare host and port options to pass to the Connect() method
     clientOptions := options.Client().ApplyURI("mongodb://admin:admin@localhost:27017")
     //fmt.Println("clientOptions type:", reflect.TypeOf(clientOptions), "\n")
@@ -79,7 +82,15 @@ func main() {
                 //fmt.Println("\nresult type:", reflect.TypeOf(result))
                 //fmt.Println("result:", result)
 
+				//jsonStr, err := json.Marshal(result)
+
+				w.Header().Set("Content-Type", "application/json")
+
 				jsonStr, err := json.Marshal(result)
+			
+				w.Write([]byte(jsonStr))
+
+
 				if err != nil {
 					fmt.Printf("Error: %s", err.Error())
 				} else {
@@ -90,4 +101,12 @@ func main() {
             }
         }
     }
+}
+
+func main() {
+    mux := http.NewServeMux()
+    mux.HandleFunc("/status", carrega)
+
+    err := http.ListenAndServe(":8081", mux)
+    log.Fatal(err)
 }
