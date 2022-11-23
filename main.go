@@ -13,10 +13,6 @@ import (
     "go.mongodb.org/mongo-driver/mongo"
     "go.mongodb.org/mongo-driver/mongo/options"	
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	//"strconv"
-	//"encoding/hex"
-
-
 
 )
 
@@ -81,7 +77,7 @@ func valida(w http.ResponseWriter, r *http.Request) {
 
 
 func updateCountValid(){
-    clientOptions := options.Client().ApplyURI("mongodb://admin:admin@localhost:27017")
+    clientOptions := options.Client().ApplyURI("mongodb://admin:admin@my-mongodb:27017")
 
     client, err := mongo.Connect(context.TODO(), clientOptions)
     if err != nil {
@@ -162,7 +158,7 @@ func updateCountValid(){
 }
 
 func updateCountInvalid(){
-    clientOptions := options.Client().ApplyURI("mongodb://admin:admin@localhost:27017")
+    clientOptions := options.Client().ApplyURI("mongodb://admin:admin@my-mongodb:27017")
 
     client, err := mongo.Connect(context.TODO(), clientOptions)
     if err != nil {
@@ -306,6 +302,6 @@ func main() {
     mux := http.NewServeMux()
     mux.HandleFunc("/valida", valida)
 	mux.HandleFunc("/status", carrega)
-    err := http.ListenAndServe(":8081", mux)
+    err := http.ListenAndServe(":8080", mux)
     log.Fatal(err)
 }

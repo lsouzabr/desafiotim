@@ -31,6 +31,18 @@ services:
     networks:
       - mongo_net
 
+  mongo_seed:
+    image: mongo:3.2.6
+    links:
+      - mongodb
+    volumes:
+      - ./mongo-seed:/mongo-seed
+    command:
+      /mongo-seed/import.sh    
+    depends_on:
+      - my-mongodb         
+
+
   my-mongoclient:
     # build will get tagged with 'image'
 

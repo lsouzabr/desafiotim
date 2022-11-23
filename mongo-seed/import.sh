@@ -1,0 +1,1 @@
+mongoimport -h localhost --port 27000 -u "admin" -p "admin" --authenticationDatabase "admin" --db desafiotim --collection desafiotim --type json --file /mongo-seed/collection.json --jsonArray
