@@ -1,10 +1,10 @@
 # desafiotim
 
 Clone o repositório usando o comando:
-#git clone https://github.com/lsouzabr/desafiotim.git
+git clone https://github.com/lsouzabr/desafiotim.git
 
 Estando na pasta do projeto, executar:
-#docker compose up
+docker compose up
 
 Após executar o comando "docker compose up" a aplicação baixará as dependências e subir os containers
 
