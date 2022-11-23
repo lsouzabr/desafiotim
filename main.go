@@ -300,8 +300,8 @@ func carrega(w http.ResponseWriter, r *http.Request) {
 
 func main() {
     mux := http.NewServeMux()
-    mux.HandleFunc("/valida", valida)
-	mux.HandleFunc("/status", carrega)
+    mux.HandleFunc("/sequence", valida)
+	mux.HandleFunc("/stats", carrega)
     err := http.ListenAndServe(":8080", mux)
     log.Fatal(err)
 }

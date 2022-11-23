@@ -1,0 +1,84 @@
+{
+	"info": {
+		"_postman_id": "c17c69e0-810f-496d-bb67-84a41e19f057",
+		"name": "desafio",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "http://localhost:8080/sequence  (valid)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\"Letters\":[\"DUHBHB\", \"DUBUHD\", \"UBUUHU\",\"BHBDHH\",\"DDDDUB\",\"UDBDUH\"]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/sequence",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"sequence"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8080/sequence (not valid)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\"Letters\":[\"AAAAA\"]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/sequence",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"sequence"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8080/stats",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/stats",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"stats"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
