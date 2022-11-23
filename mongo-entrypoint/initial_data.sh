@@ -1,0 +1,1 @@
+mongoimport -h localhost --port 27017 -u "admin" -p "admin" --authenticationDatabase "admin" --db desafiotim --collection desafiotim --type json --file /docker-entrypoint-initdb.d/initial_data.json --jsonArray
