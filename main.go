@@ -13,6 +13,10 @@ import (
     "go.mongodb.org/mongo-driver/mongo"
     "go.mongodb.org/mongo-driver/mongo/options"	
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	//"strconv"
+	//"encoding/hex"
+
+
 
 )
 
@@ -65,19 +69,18 @@ func valida(w http.ResponseWriter, r *http.Request) {
 
 			jsonStr := `[{"is_valid":true}]`
 			w.Write([]byte(jsonStr))
-			updateStatus(jsonStr)
+			updateCountValid()
 		} else{
 			w.Header().Set("Content-Type", "application/json")
 
 			jsonStr := `[{"is_valid":false}]`
-			updateStatus(jsonStr)
 			w.Write([]byte(jsonStr))
+			updateCountInvalid()
 		}
 }
 
-func updateStatus(dados string){
 
-
+func updateCountValid(){
     clientOptions := options.Client().ApplyURI("mongodb://admin:admin@localhost:27017")
 
     client, err := mongo.Connect(context.TODO(), clientOptions)
@@ -110,7 +113,7 @@ func updateStatus(dados string){
 
             var result bson.M
             err := cursor.Decode(&result)
-
+			
             if err != nil {
                 fmt.Println("cursor.Next() error:", err)
                 os.Exit(1)
@@ -118,40 +121,29 @@ func updateStatus(dados string){
             } else {
 				jsonStr, err := json.Marshal(result)
 
-
-			type MyJsonName struct {
-				ID struct {
-					id string `json:"$_id"`
-				} `json:"_id"`
-				CountInvalid int64   `json:"count_invalid"`
-				CountValid   float64 `json:"count_valid"`
-				Ratio        float64 `json:"ratio"`
-			}
-
-			// web server
-
-			type Foo struct {
-				Number int    `json:"number"`
-				Title  string `json:"title"`
-			}
-
-
-			var mJsonName MyJsonName
-			json.Unmarshal(jsonStr, &mJsonName)
-			fmt.Printf("Error: %s", jsonStr)
-
-
-
-				coll := client.Database("desafiotim").Collection("desafiotim")
-				id, _ := primitive.ObjectIDFromHex("637d01b595bc98257139a3f8")
-				filter := bson.D{{"_id", id}}
-				update := bson.D{{"$set", bson.D{{"count_valid", 5.4}}}}
-				result, err := coll.UpdateOne(context.TODO(), filter, update)
-				fmt.Println("", result)
+				type myJsonName struct {
+					ID struct {
+						id string `json:"$_id"`
+					} `json:"_id"`
+					CountInvalid int64   `json:"count_invalid"`
+					CountValid   int64 `json:"count_valid"`
+					Ratio        float64 `json:"ratio"`
+				}				
 				
 
+				var res map[string]interface{}
+				json.Unmarshal([]byte(jsonStr), &res)
 
-
+				var str interface{} = res["_id"]
+				var count_valid interface{} = res["count_valid"]
+				
+				coll := client.Database("desafiotim").Collection("desafiotim")
+				id, _ := primitive.ObjectIDFromHex(str.(string))
+				filter := bson.D{{"_id", id}}
+				update := bson.D{{"$set", bson.D{{"count_valid", count_valid.(float64)+1}}}}
+				coll.UpdateOne(context.TODO(), filter, update)
+				fmt.Println("--->", result)
+				
 
 				if err != nil {
 					panic(err)
@@ -161,7 +153,89 @@ func updateStatus(dados string){
 				if err != nil {
 					fmt.Printf("Error: %s", err.Error())
 				} else {
-					fmt.Println(string(jsonStr))
+					//fmt.Println(string(jsonStr))
+				}				
+            }
+
+        }
+    }
+}
+
+func updateCountInvalid(){
+    clientOptions := options.Client().ApplyURI("mongodb://admin:admin@localhost:27017")
+
+    client, err := mongo.Connect(context.TODO(), clientOptions)
+    if err != nil {
+        fmt.Println("mongo.Connect() ERROR:", err)
+        os.Exit(1)
+    }
+
+    ctx, _ := context.WithTimeout(context.Background(), 15*time.Second)
+
+    col := client.Database("desafiotim").Collection("desafiotim")
+
+    var result Fields
+
+    err = col.FindOne(context.TODO(), bson.D{}).Decode(&result)
+    if err != nil {
+        fmt.Println("FindOne() ERROR:", err)
+        os.Exit(1)
+    } 
+
+    cursor, err := col.Find(context.TODO(), bson.D{})
+
+
+    if err != nil {
+        fmt.Println("Finding all documents ERROR:", err)
+        defer cursor.Close(ctx)
+
+    } else {
+        for cursor.Next(ctx) {
+
+            var result bson.M
+            err := cursor.Decode(&result)
+			
+            if err != nil {
+                fmt.Println("cursor.Next() error:", err)
+                os.Exit(1)
+               
+            } else {
+				jsonStr, err := json.Marshal(result)
+
+				type myJsonName struct {
+					ID struct {
+						id string `json:"$_id"`
+					} `json:"_id"`
+					CountInvalid int64   `json:"count_invalid"`
+					CountValid   int64 `json:"count_valid"`
+					Ratio        float64 `json:"ratio"`
+				}				
+				
+
+				var res map[string]interface{}
+				json.Unmarshal([]byte(jsonStr), &res)
+
+				var str interface{} = res["_id"]
+				var count_invalid interface{} = res["count_invalid"]
+
+				
+				coll := client.Database("desafiotim").Collection("desafiotim")
+				id, _ := primitive.ObjectIDFromHex(str.(string))
+				filter := bson.D{{"_id", id}}
+				update := bson.D{{"$set", bson.D{{"count_invalid", count_invalid.(float64)+1}}}}
+				coll.UpdateOne(context.TODO(), filter, update)
+				fmt.Println("--->", result)
+				
+
+				if err != nil {
+					panic(err)
+				}
+
+
+				if err != nil {
+					fmt.Printf("Error: %s", err.Error())
+				} else {
+					//fmt.Println(string(jsonStr))
 				}				
             }
 
